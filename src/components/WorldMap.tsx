@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import L from 'leaflet';
 import { CountryInfo, CityInfo } from '../types';
-import { WORLD_COUNTRY_PATHS, projectMercator } from '../data/worldSvgPaths';
-import { ZoomIn, ZoomOut, RotateCcw, MapPin, Building2, Landmark, Compass, Award } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, Compass, MapPin, Building2 } from 'lucide-react';
 
 interface WorldMapProps {
   countries: CountryInfo[];
@@ -22,16 +22,13 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   onSelectCity,
   activeFilter
 }) => {
-  // Zoom & Pan transformation state
-  const [transform, setTransform] = useState({ scale: 1, x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const containerRef = useRef<HTMLDivElement>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const markersLayerRef = useRef<L.LayerGroup | null>(null);
+  const linesLayerRef = useRef<L.LayerGroup | null>(null);
+  const tileLayerRef = useRef<L.TileLayer | null>(null);
 
-  // Hover states for tooltips
-  const [hoveredCountry, setHoveredCountry] = useState<CountryInfo | null>(null);
-  const [hoveredCity, setHoveredCity] = useState<CityInfo | null>(null);
-  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const [activeTileType, setActiveTileType] = useState<'dark' | 'topo' | 'osm'>('dark');
 
   // Filter cities based on active filter
   const filteredCities = cities.filter((city) => {
@@ -63,463 +60,406 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     return true;
   });
 
-  // Zoom handlers
-  const handleZoom = (delta: number) => {
-    setTransform((prev) => {
-      const newScale = Math.min(Math.max(prev.scale + delta, 0.8), 6);
-      return { ...prev, scale: newScale };
-    });
-  };
-
-  const handleResetZoom = () => {
-    setTransform({ scale: 1, x: 0, y: 0 });
-  };
-
-  // Quick preset jump
-  const jumpToRegion = (region: 'world' | 'europe' | 'middleEast' | 'southAsia' | 'americas') => {
-    if (region === 'world') {
-      setTransform({ scale: 1, x: 0, y: 0 });
-    } else if (region === 'europe') {
-      // Focus Europe (Switzerland, UK, France, Germany)
-      setTransform({ scale: 3.2, x: -620, y: -80 });
-    } else if (region === 'middleEast') {
-      setTransform({ scale: 3.0, x: -800, y: -220 });
-    } else if (region === 'southAsia') {
-      setTransform({ scale: 2.8, x: -1050, y: -260 });
-    } else if (region === 'americas') {
-      setTransform({ scale: 1.8, x: 100, y: -120 });
+  // Helper to get tile configuration without ANY API Key requirement
+  const getTileConfig = (type: 'dark' | 'topo' | 'osm') => {
+    switch (type) {
+      case 'dark':
+        return {
+          url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+          attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+          maxZoom: 16
+        };
+      case 'topo':
+        return {
+          url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+          attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom',
+          maxZoom: 18
+        };
+      case 'osm':
+      default:
+        return {
+          url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 19
+        };
     }
   };
 
-  // Focus on selected item if changes
+  // Initialize Leaflet Map with real Web Mercator (EPSG:3857) projection
   useEffect(() => {
+    if (!mapContainerRef.current) return;
+    if (mapInstanceRef.current) return;
+
+    // Create Map in standard Mercator projection
+    const map = L.map(mapContainerRef.current, {
+      center: [25, 20],
+      zoom: 2.2,
+      minZoom: 1.8,
+      maxZoom: 14,
+      zoomControl: false,
+      worldCopyJump: true,
+      maxBounds: [
+        [-85, -180],
+        [85, 180]
+      ],
+      maxBoundsViscosity: 0.8
+    });
+
+    // 100% Free Open-Source Tile Layer (Zero API Key)
+    const config = getTileConfig('dark');
+    const initialTileLayer = L.tileLayer(config.url, {
+      attribution: config.attribution,
+      maxZoom: config.maxZoom
+    }).addTo(map);
+
+    tileLayerRef.current = initialTileLayer;
+
+    // Create layer groups for markers and geographic graticule lines
+    markersLayerRef.current = L.layerGroup().addTo(map);
+    linesLayerRef.current = L.layerGroup().addTo(map);
+
+    // Draw Mercator Reference Graticules from Retina Digest PDF Page 1
+    // 1. বিষুবরেখা (Equator 0°)
+    L.polyline([[0, -180], [0, 180]], {
+      color: '#38bdf8',
+      weight: 1.2,
+      dashArray: '4, 4',
+      opacity: 0.7
+    }).bindTooltip('বিষুবরেখা / নিরক্ষরেখা (০° Equator)', { permanent: false, direction: 'top' })
+      .addTo(linesLayerRef.current);
+
+    // 2. কর্কটক্রান্তি রেখা (Tropic of Cancer 23.5° N)
+    L.polyline([[23.5, -180], [23.5, 180]], {
+      color: '#fbbf24',
+      weight: 1.2,
+      dashArray: '3, 4',
+      opacity: 0.7
+    }).bindTooltip('কর্কটক্রান্তি রেখা (২৩.৫° উত্তর - Tropic of Cancer)', { permanent: false, direction: 'top' })
+      .addTo(linesLayerRef.current);
+
+    // 3. মকরক্রান্তি রেখা (Tropic of Capricorn 23.5° S)
+    L.polyline([[-23.5, -180], [-23.5, 180]], {
+      color: '#fbbf24',
+      weight: 1.2,
+      dashArray: '3, 4',
+      opacity: 0.7
+    }).bindTooltip('মকরক্রান্তি রেখা (২৩.৫° দক্ষিণ - Tropic of Capricorn)', { permanent: false, direction: 'bottom' })
+      .addTo(linesLayerRef.current);
+
+    // 4. গ্রিনিচ মূল মধ্যরেখা (Prime Meridian 0°)
+    L.polyline([[-85, 0], [85, 0]], {
+      color: '#a855f7',
+      weight: 1.2,
+      dashArray: '4, 4',
+      opacity: 0.7
+    }).bindTooltip('গ্রিনিচ মূল মধ্যরেখা (০° Prime Meridian - লন্ডন)', { permanent: false, direction: 'right' })
+      .addTo(linesLayerRef.current);
+
+    mapInstanceRef.current = map;
+
+    return () => {
+      map.remove();
+      mapInstanceRef.current = null;
+    };
+  }, []);
+
+  // Switch Tile Layer when user changes map style
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    if (tileLayerRef.current) {
+      map.removeLayer(tileLayerRef.current);
+    }
+
+    const config = getTileConfig(activeTileType);
+    tileLayerRef.current = L.tileLayer(config.url, {
+      attribution: config.attribution,
+      maxZoom: config.maxZoom
+    }).addTo(map);
+
+    // Ensure markers stay on top
+    if (linesLayerRef.current) {
+      linesLayerRef.current.eachLayer((l) => {
+        if ('bringToFront' in l && typeof (l as any).bringToFront === 'function') {
+          (l as any).bringToFront();
+        }
+      });
+    }
+    if (markersLayerRef.current) {
+      markersLayerRef.current.eachLayer((l) => {
+        if ('bringToFront' in l && typeof (l as any).bringToFront === 'function') {
+          (l as any).bringToFront();
+        }
+      });
+    }
+  }, [activeTileType]);
+
+  // Update Markers whenever filteredCities, selectedCity, or selectedCountry changes
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    const markersLayer = markersLayerRef.current;
+    if (!map || !markersLayer) return;
+
+    markersLayer.clearLayers();
+
+    filteredCities.forEach((city) => {
+      const [lng, lat] = city.coordinates;
+      const isSelected = selectedCity?.id === city.id;
+      const hasHeadquarters = city.headquarters && city.headquarters.length > 0;
+      const isSwiss = city.countryId === 'CH';
+
+      // Custom HTML Marker Pin
+      const pinColor = isSelected
+        ? '#fde047'
+        : isSwiss
+        ? '#fbbf24'
+        : city.isCapital
+        ? '#f59e0b'
+        : hasHeadquarters
+        ? '#38bdf8'
+        : '#94a3b8';
+
+      const customIcon = L.divIcon({
+        className: 'custom-map-pin',
+        iconSize: [26, 26],
+        iconAnchor: [13, 13],
+        html: `
+          <div style="position: relative; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            ${
+              hasHeadquarters || isSwiss || isSelected
+                ? `<div style="position: absolute; inset: 0px; border-radius: 9999px; border: 1.5px dashed ${pinColor}; animation: spin 8s linear infinite; opacity: 0.85;"></div>`
+                : ''
+            }
+            <div style="
+              width: ${isSelected ? '14px' : city.isCapital ? '12px' : '10px'};
+              height: ${isSelected ? '14px' : city.isCapital ? '12px' : '10px'};
+              border-radius: 9999px;
+              background-color: ${pinColor};
+              border: 2px solid #020617;
+              box-shadow: 0 0 ${isSelected ? '10px' : '6px'} ${pinColor};
+              transition: transform 0.15s ease;
+            "></div>
+          </div>
+        `
+      });
+
+      const marker = L.marker([lat, lng], { icon: customIcon });
+
+      // Rich Hover Tooltip with bold PDF info
+      const tooltipContent = `
+        <div style="font-family: 'Hind Siliguri', sans-serif; font-size: 12px; line-height: 1.4; padding: 2px 4px; min-width: 180px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; margin-bottom: 4px;">
+            <strong style="color: #ffffff; font-size: 13px;">${city.nameBn}</strong>
+            <span style="color: #94a3b8; font-size: 11px;">(${city.nameEn})</span>
+          </div>
+          <div style="color: #f59e0b; font-weight: 500;">দেশ: ${city.countryBn}</div>
+          ${city.isCapital ? '<div style="color: #38bdf8; font-size: 11px;">★ রাজধানী</div>' : ''}
+          ${city.sobriquetBn ? `<div style="color: #fde047; font-size: 11px;">উপনাম: ${city.sobriquetBn}</div>` : ''}
+          ${city.river ? `<div style="color: #94a3b8; font-size: 11px;">নদী: ${city.river}</div>` : ''}
+          ${
+            hasHeadquarters
+              ? `<div style="color: #38bdf8; font-weight: 600; margin-top: 3px;">🏛️ সদর দপ্তর: ${city.headquarters?.length}টি</div>`
+              : ''
+          }
+          ${
+            city.boldFacts && city.boldFacts.length > 0
+              ? `<div style="color: #e2e8f0; font-size: 11px; margin-top: 4px; padding-top: 3px; border-top: 1px dashed rgba(255,255,255,0.15);">★ ${city.boldFacts[0]}</div>`
+              : ''
+          }
+          <div style="color: #f59e0b; font-size: 10px; margin-top: 4px; text-align: right;">👉 ক্লিক করে বিস্তারিত দেখুন</div>
+        </div>
+      `;
+
+      marker.bindTooltip(tooltipContent, {
+        direction: 'top',
+        offset: [0, -10],
+        opacity: 0.95,
+        className: 'leaflet-custom-tooltip'
+      });
+
+      marker.on('click', () => {
+        onSelectCity(city);
+      });
+
+      marker.addTo(markersLayer);
+    });
+  }, [filteredCities, selectedCity, onSelectCity]);
+
+  // Fly to selected city or country when updated
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
     if (selectedCity) {
-      const [cx, cy] = projectMercator(selectedCity.coordinates[0], selectedCity.coordinates[1]);
-      setTransform({
-        scale: 3.8,
-        x: -cx * 3.8 + (containerRef.current?.clientWidth || 800) / 2,
-        y: -cy * 3.8 + (containerRef.current?.clientHeight || 500) / 2
+      const [lng, lat] = selectedCity.coordinates;
+      map.flyTo([lat, lng], 6.5, {
+        duration: 1.2,
+        easeLinearity: 0.25
+      });
+    } else if (selectedCountry && selectedCountry.cities.length > 0) {
+      const firstCity = selectedCountry.cities[0];
+      const [lng, lat] = firstCity.coordinates;
+      map.flyTo([lat, lng], 5.0, {
+        duration: 1.2,
+        easeLinearity: 0.25
       });
     }
-  }, [selectedCity]);
+  }, [selectedCity, selectedCountry]);
 
-  // Mouse pan handlers
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return;
-    setIsDragging(true);
-    setDragStart({ x: e.clientX - transform.x, y: e.clientY - transform.y });
-  };
+  // Region Jump Handlers
+  const handleJumpToRegion = (region: 'world' | 'switzerland' | 'europe' | 'middleEast' | 'southAsia' | 'americas') => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (isDragging) {
-      setTransform((prev) => ({
-        ...prev,
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
-      }));
+    switch (region) {
+      case 'world':
+        map.flyTo([25, 20], 2.2, { duration: 1.2 });
+        break;
+      case 'switzerland':
+        map.flyTo([46.8, 8.2], 8.0, { duration: 1.4 });
+        break;
+      case 'europe':
+        map.flyTo([50, 10], 4.5, { duration: 1.2 });
+        break;
+      case 'middleEast':
+        map.flyTo([28, 45], 4.2, { duration: 1.2 });
+        break;
+      case 'southAsia':
+        map.flyTo([23, 85], 4.8, { duration: 1.2 });
+        break;
+      case 'americas':
+        map.flyTo([20, -75], 3.2, { duration: 1.2 });
+        break;
     }
-    // Update tooltip position
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      setTooltipPos({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
-      });
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
   };
 
   return (
-    <div
-      ref={containerRef}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={() => {
-        setIsDragging(false);
-        setHoveredCity(null);
-        setHoveredCountry(null);
-      }}
-      className={`relative w-full h-[600px] lg:h-[720px] bg-slate-950 overflow-hidden select-none ${
-        isDragging ? 'cursor-grabbing' : 'cursor-grab'
-      }`}
-    >
-      {/* Background Graticule Grid & Map Texture */}
-      <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px]" />
-
+    <div className="relative w-full h-[600px] lg:h-[720px] bg-slate-950 overflow-hidden select-none">
       {/* Map Control Toolbar */}
-      <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
-        <div className="flex flex-col bg-slate-900/90 border border-slate-800 rounded-lg shadow-xl overflow-hidden backdrop-blur-sm">
+      <div className="absolute top-4 left-4 z-[400] flex flex-col gap-2">
+        {/* Zoom Controls */}
+        <div className="flex flex-col bg-slate-900/95 border border-slate-800 rounded-xl shadow-2xl overflow-hidden backdrop-blur-md">
           <button
-            onClick={() => handleZoom(0.5)}
-            className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+            onClick={() => mapInstanceRef.current?.zoomIn()}
+            className="p-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
             title="জুম ইন (+)"
           >
             <ZoomIn className="w-4 h-4" />
           </button>
           <div className="h-px bg-slate-800" />
           <button
-            onClick={() => handleZoom(-0.5)}
-            className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+            onClick={() => mapInstanceRef.current?.zoomOut()}
+            className="p-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
             title="জুম আউট (-)"
           >
             <ZoomOut className="w-4 h-4" />
           </button>
           <div className="h-px bg-slate-800" />
           <button
-            onClick={handleResetZoom}
-            className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
-            title="রিসেট"
+            onClick={() => handleJumpToRegion('world')}
+            className="p-2.5 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+            title="বিশ্ব মানচিত্র রিসেট"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Region Jump Presets */}
-        <div className="hidden sm:flex flex-col gap-1 p-1.5 bg-slate-900/85 border border-slate-800 rounded-lg text-xs backdrop-blur-sm">
-          <span className="text-[10px] font-medium text-slate-400 px-1 py-0.5 uppercase tracking-wider">
-            অঞ্চল কেন্দ্র
+        {/* Region Jump Menu */}
+        <div className="hidden sm:flex flex-col gap-1 p-2 bg-slate-900/95 border border-slate-800 rounded-xl text-xs backdrop-blur-md shadow-2xl">
+          <span className="text-[10px] font-bold text-slate-400 px-1 py-0.5 uppercase tracking-wider">
+            অঞ্চল নেভিগেশন
           </span>
           <button
-            onClick={() => jumpToRegion('world')}
-            className="px-2 py-1 text-left rounded text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors"
+            onClick={() => handleJumpToRegion('switzerland')}
+            className="px-2 py-1.5 text-left rounded-lg text-amber-300 hover:text-amber-200 hover:bg-amber-950/40 transition-colors flex items-center justify-between font-semibold border border-amber-800/30"
           >
-            সমগ্র বিশ্ব
+            <span>🇨🇭 সুইজারল্যান্ড</span>
+            <span className="text-[10px] text-amber-400 font-mono">CH</span>
           </button>
           <button
-            onClick={() => jumpToRegion('europe')}
-            className="px-2 py-1 text-left rounded text-slate-300 hover:text-amber-400 hover:bg-slate-800/80 transition-colors flex items-center justify-between"
+            onClick={() => handleJumpToRegion('europe')}
+            className="px-2 py-1 text-left rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors"
           >
-            <span>ইউরোপ / সুইজারল্যান্ড</span>
-            <span className="text-[9px] text-amber-500 font-mono">CH</span>
+            ইউরোপ
           </button>
           <button
-            onClick={() => jumpToRegion('middleEast')}
-            className="px-2 py-1 text-left rounded text-slate-300 hover:text-amber-400 hover:bg-slate-800/80 transition-colors"
+            onClick={() => handleJumpToRegion('middleEast')}
+            className="px-2 py-1 text-left rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors"
           >
             মধ্যপ্রাচ্য
           </button>
           <button
-            onClick={() => jumpToRegion('southAsia')}
-            className="px-2 py-1 text-left rounded text-slate-300 hover:text-amber-400 hover:bg-slate-800/80 transition-colors"
+            onClick={() => handleJumpToRegion('southAsia')}
+            className="px-2 py-1 text-left rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors"
           >
             দক্ষিণ এশিয়া
           </button>
           <button
-            onClick={() => jumpToRegion('americas')}
-            className="px-2 py-1 text-left rounded text-slate-300 hover:text-amber-400 hover:bg-slate-800/80 transition-colors"
+            onClick={() => handleJumpToRegion('americas')}
+            className="px-2 py-1 text-left rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors"
           >
             আমেরিকা
+          </button>
+        </div>
+
+        {/* Map Tile Style Switcher */}
+        <div className="hidden sm:flex items-center gap-1 p-1 bg-slate-900/95 border border-slate-800 rounded-xl text-[11px] backdrop-blur-md shadow-2xl">
+          <button
+            onClick={() => setActiveTileType('dark')}
+            className={`px-2 py-1 rounded-lg transition-colors ${
+              activeTileType === 'dark'
+                ? 'bg-amber-500 text-slate-950 font-bold'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            ডার্ক
+          </button>
+          <button
+            onClick={() => setActiveTileType('topo')}
+            className={`px-2 py-1 rounded-lg transition-colors ${
+              activeTileType === 'topo'
+                ? 'bg-amber-500 text-slate-950 font-bold'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            টোপো
+          </button>
+          <button
+            onClick={() => setActiveTileType('osm')}
+            className={`px-2 py-1 rounded-lg transition-colors ${
+              activeTileType === 'osm'
+                ? 'bg-amber-500 text-slate-950 font-bold'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            OSM
           </button>
         </div>
       </div>
 
       {/* Legend Badge Bottom Left */}
-      <div className="absolute bottom-4 left-4 z-20 pointer-events-none hidden md:flex items-center gap-4 px-3 py-1.5 bg-slate-900/90 border border-slate-800 rounded-lg text-xs text-slate-300 backdrop-blur-sm">
+      <div className="absolute bottom-4 left-4 z-[400] hidden md:flex items-center gap-4 px-3.5 py-2 bg-slate-900/95 border border-slate-800 rounded-xl text-xs text-slate-300 backdrop-blur-md shadow-xl">
         <div className="flex items-center gap-1.5">
           <div className="w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-amber-400/30" />
           <span>রাজধানী</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-2.5 h-2.5 rounded-full bg-sky-400 ring-2 ring-sky-400/30" />
-          <span>আন্তর্জাতিক শহর ও সদর দপ্তর</span>
+          <span>আন্তর্জাতিক সদর দপ্তর</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <Compass className="w-3.5 h-3.5 text-slate-400" />
-          <span>মার্কেটর প্রজেকশন (Mercator Projection)</span>
+          <div className="w-2.5 h-2.5 rounded-full bg-amber-300 ring-2 ring-amber-300/40" />
+          <span>সুইস শহর (জেনেভা, বার্ন, জুরিখ...)</span>
+        </div>
+        <div className="flex items-center gap-1.5 border-l border-slate-800 pl-3">
+          <Compass className="w-3.5 h-3.5 text-amber-400" />
+          <span className="font-medium text-slate-200">ওপেন সোর্স মার্কেটর প্রজেকশন (EPSG:3857)</span>
         </div>
       </div>
 
-      {/* Main Vector SVG Map */}
-      <svg
-        viewBox="0 0 1000 560"
-        className="w-full h-full"
-        style={{
-          transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
-          transformOrigin: '0 0',
-          transition: isDragging ? 'none' : 'transform 0.25s ease-out'
-        }}
-      >
-        <defs>
-          <radialGradient id="oceanGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#091428" />
-            <stop offset="100%" stopColor="#020617" />
-          </radialGradient>
-          <filter id="cityGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="0" stdDeviation="2" floodColor="#f59e0b" floodOpacity="0.8" />
-          </filter>
-        </defs>
-
-        {/* Ocean Background */}
-        <rect width="1000" height="560" fill="url(#oceanGlow)" />
-
-        {/* Mercator Projection Latitude / Longitude lines (Graticules from PDF page 1) */}
-        {/* Equator (বিষুবরেখা 0°) */}
-        <line x1="0" y1="280" x2="1000" y2="280" stroke="#1e293b" strokeWidth="1" strokeDasharray="3,3" />
-        <text x="10" y="276" fill="#475569" fontSize="7" fontFamily="sans-serif">
-          বিষুবরেখা (০° Equator)
-        </text>
-
-        {/* Tropic of Cancer (কর্কটক্রান্তি ২৩.৫° উত্তর) */}
-        <line x1="0" y1="210" x2="1000" y2="210" stroke="#1e293b" strokeWidth="0.8" strokeDasharray="2,2" />
-        <text x="10" y="206" fill="#475569" fontSize="6.5" fontFamily="sans-serif">
-          কর্কটক্রান্তি (২৩.৫° উত্তর)
-        </text>
-
-        {/* Tropic of Capricorn (মকরক্রান্তি ২৩.৫° দক্ষিণ) */}
-        <line x1="0" y1="350" x2="1000" y2="350" stroke="#1e293b" strokeWidth="0.8" strokeDasharray="2,2" />
-        <text x="10" y="346" fill="#475569" fontSize="6.5" fontFamily="sans-serif">
-          মকরক্রান্তি (২৩.৫° দক্ষিণ)
-        </text>
-
-        {/* Prime Meridian (মূল মধ্যরেখা ০°) - Passes near London */}
-        <line x1="500" y1="0" x2="500" y2="560" stroke="#1e293b" strokeWidth="1" strokeDasharray="3,3" />
-        <text x="504" y="20" fill="#475569" fontSize="6.5" fontFamily="sans-serif">
-          মূল মধ্যরেখা (গ্রিনিচ ০°)
-        </text>
-
-        {/* Countries Layer */}
-        <g id="countries">
-          {WORLD_COUNTRY_PATHS.map((item) => {
-            const countryData = countries.find((c) => c.id === item.id);
-            const isSelected = selectedCountry?.id === item.id;
-            const isHovered = hoveredCountry?.id === item.id;
-
-            return (
-              <path
-                key={item.id}
-                d={item.path}
-                fill={
-                  isSelected
-                    ? '#38bdf8'
-                    : isHovered
-                    ? '#0284c7'
-                    : item.id === 'CH'
-                    ? '#f59e0b' // Highlight Switzerland
-                    : '#1e293b'
-                }
-                fillOpacity={item.id === 'CH' ? 0.85 : isSelected ? 0.75 : isHovered ? 0.6 : 0.45}
-                stroke={item.id === 'CH' ? '#fde047' : isSelected ? '#38bdf8' : '#334155'}
-                strokeWidth={item.id === 'CH' ? 1.5 : isSelected ? 1.5 : 0.75}
-                className="transition-colors duration-150 cursor-pointer"
-                onMouseEnter={() => {
-                  if (countryData) setHoveredCountry(countryData);
-                }}
-                onMouseLeave={() => setHoveredCountry(null)}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (countryData) onSelectCountry(countryData);
-                }}
-              />
-            );
-          })}
-        </g>
-
-        {/* Country Name Labels (Visible on moderate zoom) */}
-        {transform.scale >= 1.4 &&
-          WORLD_COUNTRY_PATHS.map((item) => {
-            const [cx, cy] = projectMercator(item.center[0], item.center[1]);
-            return (
-              <text
-                key={`lbl-${item.id}`}
-                x={cx}
-                y={cy}
-                textAnchor="middle"
-                fill="#94a3b8"
-                fontSize={item.id === 'CH' ? '9' : '7.5'}
-                fontWeight={item.id === 'CH' ? 'bold' : 'normal'}
-                className="pointer-events-none select-none drop-shadow"
-              >
-                {item.nameBn}
-              </text>
-            );
-          })}
-
-        {/* Cities Layer (Capitals and Major Cities from PDF) */}
-        <g id="cities">
-          {filteredCities.map((city) => {
-            const [x, y] = projectMercator(city.coordinates[0], city.coordinates[1]);
-            const isSelected = selectedCity?.id === city.id;
-            const isHovered = hoveredCity?.id === city.id;
-            const hasHeadquarters = city.headquarters && city.headquarters.length > 0;
-            const isSwissCity = city.countryId === 'CH';
-
-            return (
-              <g
-                key={city.id}
-                transform={`translate(${x}, ${y})`}
-                className="cursor-pointer group"
-                onMouseEnter={() => setHoveredCity(city)}
-                onMouseLeave={() => setHoveredCity(null)}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSelectCity(city);
-                }}
-              >
-                {/* Pulsing ring for headquarters & Switzerland cities */}
-                {(hasHeadquarters || isSwissCity || isSelected) && (
-                  <circle
-                    r={isSelected ? 9 : 6.5}
-                    fill="none"
-                    stroke={isSwissCity ? '#f59e0b' : '#38bdf8'}
-                    strokeWidth="1"
-                    strokeDasharray="2,2"
-                    className="animate-spin opacity-80"
-                    style={{ animationDuration: '6s' }}
-                  />
-                )}
-
-                {/* City Core Dot */}
-                <circle
-                  r={isSelected ? 5.5 : city.isCapital ? 4.5 : 3.8}
-                  fill={
-                    city.isCapital
-                      ? '#f59e0b'
-                      : isSwissCity
-                      ? '#fbbf24'
-                      : '#38bdf8'
-                  }
-                  stroke="#020617"
-                  strokeWidth="1.2"
-                  filter={isSelected || isHovered ? 'url(#cityGlow)' : undefined}
-                  className="transition-transform duration-150 group-hover:scale-125"
-                />
-
-                {/* Inner dot for capitals */}
-                {city.isCapital && (
-                  <circle r="1.5" fill="#ffffff" className="pointer-events-none" />
-                )}
-
-                {/* City Label */}
-                {(transform.scale >= 2.0 || isSwissCity || isSelected || isHovered) && (
-                  <text
-                    x={city.coordinates[0] > 100 ? -8 : 8}
-                    y={3}
-                    textAnchor={city.coordinates[0] > 100 ? 'end' : 'start'}
-                    fill={isHovered || isSelected ? '#fde047' : isSwissCity ? '#fcd34d' : '#e2e8f0'}
-                    fontSize={isSwissCity ? '8.5' : '7.5'}
-                    fontWeight={isSwissCity || city.isCapital ? 'bold' : 'normal'}
-                    className="pointer-events-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] select-none"
-                  >
-                    {city.nameBn}
-                  </text>
-                )}
-              </g>
-            );
-          })}
-        </g>
-      </svg>
-
-      {/* Floating Hover Tooltip */}
-      {(hoveredCity || hoveredCountry) && (
-        <div
-          style={{
-            left: `${Math.min(tooltipPos.x + 12, (containerRef.current?.clientWidth || 800) - 280)}px`,
-            top: `${Math.min(tooltipPos.y + 12, (containerRef.current?.clientHeight || 500) - 180)}px`
-          }}
-          className="absolute z-40 pointer-events-none max-w-xs p-3 bg-slate-900/95 border border-amber-500/40 rounded-xl shadow-2xl backdrop-blur-md transition-all text-slate-100"
-        >
-          {hoveredCity ? (
-            <div>
-              <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-1.5 mb-2">
-                <div className="flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-amber-400" />
-                  <span className="font-bold text-sm text-slate-100">{hoveredCity.nameBn}</span>
-                  <span className="text-xs text-slate-400">({hoveredCity.nameEn})</span>
-                </div>
-                {hoveredCity.isCapital && (
-                  <span className="text-[10px] font-semibold bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30">
-                    রাজধানী
-                  </span>
-                )}
-              </div>
-
-              <div className="text-xs text-slate-300 space-y-1">
-                <div>
-                  <span className="text-slate-400">দেশ: </span>
-                  <span className="font-medium text-amber-300">{hoveredCity.countryBn}</span>
-                </div>
-
-                {hoveredCity.river && (
-                  <div>
-                    <span className="text-slate-400">নদী: </span>
-                    <span>{hoveredCity.river}</span>
-                  </div>
-                )}
-
-                {hoveredCity.sobriquetBn && (
-                  <div>
-                    <span className="text-slate-400">উপনাম: </span>
-                    <span className="text-amber-200 font-medium">{hoveredCity.sobriquetBn}</span>
-                  </div>
-                )}
-
-                {hoveredCity.headquarters && hoveredCity.headquarters.length > 0 && (
-                  <div className="pt-1">
-                    <span className="text-amber-400 font-medium flex items-center gap-1">
-                      <Building2 className="w-3 h-3" />
-                      সদর দপ্তর ({hoveredCity.headquarters.length}টি):
-                    </span>
-                    <p className="text-[11px] text-slate-300 line-clamp-2 mt-0.5">
-                      {hoveredCity.headquarters.slice(0, 3).join(', ')}
-                    </p>
-                  </div>
-                )}
-
-                {hoveredCity.boldFacts && hoveredCity.boldFacts.length > 0 && (
-                  <div className="pt-1 border-t border-slate-800/80">
-                    <p className="text-[11px] text-amber-100/90 font-medium line-clamp-2">
-                      ⭐ {hoveredCity.boldFacts[0]}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div className="mt-2 pt-1 border-t border-slate-800 text-[10px] text-amber-400/90 font-medium">
-                👉 ক্লিক করে সম্পূর্ণ বিবরণ ও প্রশ্ন দেখুন
-              </div>
-            </div>
-          ) : hoveredCountry ? (
-            <div>
-              <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-1.5 mb-2">
-                <span className="font-bold text-sm text-slate-100">{hoveredCountry.nameBn}</span>
-                <span className="text-xs text-slate-400">({hoveredCountry.nameEn})</span>
-              </div>
-
-              <div className="text-xs text-slate-300 space-y-1">
-                <div>
-                  <span className="text-slate-400">রাজধানী: </span>
-                  <span className="font-medium text-amber-300">{hoveredCountry.capitalBn}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400">মুদ্রা: </span>
-                  <span>{hoveredCountry.currencyBn}</span>
-                </div>
-                {hoveredCountry.sobriquetsBn && (
-                  <div>
-                    <span className="text-slate-400">উপনাম: </span>
-                    <span className="text-amber-200 font-medium">{hoveredCountry.sobriquetsBn.join(', ')}</span>
-                  </div>
-                )}
-                {hoveredCountry.boldHighlights && hoveredCountry.boldHighlights.length > 0 && (
-                  <div className="pt-1 border-t border-slate-800">
-                    <p className="text-[11px] text-amber-200 line-clamp-2">
-                      ⭐ {hoveredCountry.boldHighlights[0]}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div className="mt-2 pt-1 border-t border-slate-800 text-[10px] text-amber-400/90 font-medium">
-                👉 ক্লিক করে ইতিহাস, যুদ্ধ, মুদ্রা ও সংবিধান দেখুন
-              </div>
-            </div>
-          ) : null}
-        </div>
-      )}
+      {/* Leaflet Map Div Container */}
+      <div ref={mapContainerRef} className="w-full h-full z-0" />
     </div>
   );
 };
