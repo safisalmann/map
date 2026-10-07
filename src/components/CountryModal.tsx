@@ -145,7 +145,7 @@ export const CountryModal: React.FC<CountryModalProps> = ({
                 <div>
                   <h3 className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4 text-amber-400" />
-                    <span>রেটিনা ডাইজেস্ট বোল্ড তথ্য (পরীক্ষায় আসা প্রশ্ন ফোকাস)</span>
+                    <span>(পরীক্ষায় আসা প্রশ্ন)</span>
                   </h3>
                   <div className="space-y-2">
                     {country.boldHighlights.map((highlight, idx) => (

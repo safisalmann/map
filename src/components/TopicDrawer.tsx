@@ -43,7 +43,7 @@ export const TopicDrawer: React.FC<TopicDrawerProps> = ({
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-amber-400" />
             <div>
-              <h3 className="font-bold text-base text-white">রেটিনা ডাইজেস্ট বিষয়ভিত্তিক চার্ট</h3>
+              <h3 className="font-bold text-base text-white">বিষয়ভিত্তিক চার্ট</h3>
               <p className="text-xs text-slate-400">আন্তর্জাতিক সাধারণ জ্ঞানের নির্বাচিত অধ্যায়</p>
             </div>
           </div>
