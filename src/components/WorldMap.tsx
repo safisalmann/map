@@ -28,7 +28,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   const linesLayerRef = useRef<L.LayerGroup | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
 
-  const [activeTileType, setActiveTileType] = useState<'dark' | 'topo' | 'osm'>('dark');
+  const [activeTileType, setActiveTileType] = useState<'dark' | 'topo' | 'osm'>('topo');
 
   // Filter cities based on active filter
   const filteredCities = cities.filter((city) => {
@@ -106,7 +106,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     });
 
     // 100% Free Open-Source Tile Layer (Zero API Key)
-    const config = getTileConfig('dark');
+    const config = getTileConfig('topo');
     const initialTileLayer = L.tileLayer(config.url, {
       attribution: config.attribution,
       maxZoom: config.maxZoom
