@@ -31,8 +31,8 @@ export interface CountryInfo {
   parliamentBn?: {
     name: string;
     type: 'এক-কক্ষ' | 'দ্বি-কক্ষ';
-    upperHouse?: string;
-    lowerHouse?: string;
+    upperHouse?: string | null;
+    lowerHouse?: string | null;
   };
   nationalEmblemBn?: string;
   nationalSportBn?: string;

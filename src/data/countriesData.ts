@@ -454,6 +454,388 @@ export const COUNTRIES_DATA: CountryInfo[] = [
     cities: CITIES_DATA.filter((c) => c.countryId === 'CN')
   },
 
+
+  // --- SPAIN ---
+  {
+    id: 'ES',
+    nameBn: 'স্পেন',
+    nameEn: 'Spain',
+    continentBn: 'ইউরোপ',
+    capitalBn: 'মাদ্রিদ',
+    capitalEn: 'Madrid',
+    currencyBn: 'ইউরো',
+    sobriquetsBn: ['বুলফাইটিংয়ের দেশ', 'বায়ুর ঘূর্ণযন্ত্রের দেশ'],
+    parliamentBn: {
+      name: 'কোর্টেস জেনারেলেস (Cortes Generales)',
+      type: 'দ্বি-কক্ষ',
+      upperHouse: 'সিনেট (Senate)',
+      lowerHouse: 'কংগ্রেস অব ডেপুটিজ (Congress of Deputies)'
+    },
+    nationalEmblemBn: 'স্পেনীয় রাজকীয় প্রতীক (পিলার্স অব হারকিউলিস অন্তর্ভুক্ত)',
+    nationalSportBn: 'ফুটবল',
+    airlinesBn: ['আইবেরিয়া (Iberia)'],
+    intelligenceBn: ['সিএনআই (CNI - Centro Nacional de Inteligencia)'],
+    landmarksBn: ['সাগ্ৰাদা ফ্যামিলিয়া', 'আলহাম্বরা প্যালেস', 'প্লাজা মায়োর', 'পার্ক গুয়েল'],
+    historyAndWarsBn: [
+      '১৯৩৬-১৯৩৯ সালের স্পেনীয় গৃহযুদ্ধ এবং জেনারেল ফ্রাঙ্কোর একনায়কতন্ত্র।',
+      '১৪৯২ সালে রিকনকুইস্টা (Reconquista) সমাপ্তি ও গ্রানাডার পতন।'
+    ],
+    notablePersonalitiesBn: ['মিগুয়েল ডি সার্ভান্তেস', 'পাবলো পিকাসো', 'সালভাদোর দালি'],
+    boldHighlights: [
+      'স্পেন ও মরক্কোর মধ্যবর্তী প্রণালীর নাম জিব্রাল্টার প্রণালী।',
+      'স্পেনের স্বায়ত্তশাসিত অঞ্চল কাতালোনিয়া দীর্ঘদিন ধরে স্বাধীনতার জন্য আন্দোলন করছে।',
+      'বিশ্বের অন্যতম শীর্ষ জলপাই তেল (Olive Oil) উৎপাদনকারী দেশ।'
+    ],
+    bcsQuestions: [
+      { question: 'স্পেনের আইনসভার নাম কী?', answer: 'কোর্টেস', exam: 'BCS / Competitive' },
+      { question: 'জিব্রাল্টার প্রণালী কোন দুটি দেশকে পৃথক করেছে?', answer: 'স্পেন ও মরক্কো', exam: '37th BCS' }
+    ],
+    cities: CITIES_DATA.filter((c) => c.countryId === 'ES')
+  },
+
+  // --- INDONESIA ---
+  {
+    id: 'ID',
+    nameBn: 'ইন্দোনেশিয়া',
+    nameEn: 'Indonesia',
+    continentBn: 'এশিয়া',
+    capitalBn: 'নুসানতারা (পূর্ববর্তী: জাকার্তা)',
+    capitalEn: 'Nusantara (formerly Jakarta)',
+    currencyBn: 'রুপিয়াহ',
+    sobriquetsBn: ['হাজার দ্বীপের দেশ', 'মসলার দ্বীপের দেশ'],
+    parliamentBn: {
+      name: 'পিপলস কনসালটেটিভ অ্যাসেম্বলি (MPR)',
+      type: 'দ্বি-কক্ষ',
+      upperHouse: 'রিজিওনাল রিপ্রেজেন্টেটিভ কাউন্সিল (DPD)',
+      lowerHouse: 'পিপলস রিপ্রেজেন্টেটিভ কাউন্সিল (DPR)'
+    },
+    nationalEmblemBn: 'গরুড় পঞ্চশীলা (Garuda Pancasila)',
+    nationalSportBn: 'ব্যাডমিন্টন',
+    airlinesBn: ['গরুড় ইন্দোনেশিয়া (Garuda Indonesia)'],
+    intelligenceBn: ['বিন (BIN - Badan Intelijen Negara)'],
+    landmarksBn: ['বোরোবুদুর স্তূপ', 'প্রাম্বানান মন্দির', 'বালি দ্বীপ', 'তানা লোত'],
+    historyAndWarsBn: [
+      'দীর্ঘ সময় ডাচ (নেদারল্যান্ডস) উপনিবেশ ছিল; ১৯৪৫ সালের ১৭ আগস্ট স্বাধীনতা ঘোষণা করে।',
+      '১৯৯৯ সালে পূর্ব তিমুর ইন্দোনেশিয়ার কাছ থেকে বিচ্ছিন্ন হয়।'
+    ],
+    notablePersonalitiesBn: ['আহমেদ সুকর্ণ (প্রথম রাষ্ট্রপতি)', 'মেগাবতী সুকর্ণপুত্রী'],
+    boldHighlights: [
+      'বিশ্বের বৃহত্তম মুসলিম জনসংখ্যার দেশ এবং বৃহত্তম দ্বীপরাষ্ট্র (১৭,০০০-এর বেশি দ্বীপ)।',
+      'ইন্দোনেশিয়ার রাষ্ট্রীয় দর্শন ও আদর্শকে বলা হয় "পঞ্চশীলা" (Pancasila)।',
+      'আসিয়ান (ASEAN)-এর সদর দফতর জাকার্তায় অবস্থিত।'
+    ],
+    bcsQuestions: [
+      { question: 'বিশ্বের বৃহত্তম দ্বীপরাষ্ট্র কোনটি?', answer: 'ইন্দোনেশিয়া', exam: '38th BCS' },
+      { question: 'আসিয়ান (ASEAN)-এর সদর দফতর কোথায় অবস্থিত?', answer: 'জাকার্তা', exam: '36th BCS' }
+    ],
+    cities: CITIES_DATA.filter((c) => c.countryId === 'ID')
+  },
+
+  // --- GREECE ---
+  {
+    id: 'GR',
+    nameBn: 'গ্রিস',
+    nameEn: 'Greece',
+    continentBn: 'ইউরোপ',
+    capitalBn: 'এথেন্স',
+    capitalEn: 'Athens',
+    currencyBn: 'ইউরো',
+    sobriquetsBn: ['পাশ্চাত্য সভ্যতার সূতিকাগার', 'ইউরোপীয় সংস্কৃতির জন্মভূমি'],
+    parliamentBn: {
+      name: 'হেলেনিক পার্লামেন্ট (Hellenic Parliament)',
+      type: 'এক-কক্ষ',
+      upperHouse: null,
+      lowerHouse: null
+    },
+    nationalEmblemBn: 'নীল ও সাদা হেলেনিক ক্রস',
+    nationalSportBn: 'ফুটবল / বাস্কেটবল',
+    airlinesBn: ['এজিয়ান এয়ারলাইন্স (Aegean Airlines)'],
+    intelligenceBn: ['ইওয়াইপি (EYP - National Intelligence Service)'],
+    landmarksBn: ['পার্থেনন (অ্যাক্রোপোলিস)', 'সান্তোরিনি দ্বীপ', 'অলিম্পিয়া', 'মেতেওরা მონასটেরি'],
+    historyAndWarsBn: [
+      'প্রাচীন অলিম্পিক গেমসের সূচনা (খ্রিস্টপূর্ব ৭৭৬ অব্দে অলিম্পিয়ায়)।',
+      '১৮২১-১৮২৯ সালের গ্রিক স্বাধীনতা যুদ্ধের মাধ্যমে উসমানীয় (অটোমান) সাম্রাজ্য থেকে স্বাধীনতা লাভ।'
+    ],
+    notablePersonalitiesBn: ['সক্রেটিস', 'প্লেটো', 'অ্যারিস্টটল', 'অ্যালেকজান্ডার দ্য গ্রেট'],
+    boldHighlights: [
+      'আধুনিক অলিম্পিক গেমসের প্রথম আসর অনুষ্ঠিত হয় ১৮৯৬ সালে এথেন্সে।',
+      'গ্রিসকে বলা হয় গণতন্ত্রের জন্মভূমি (Cradle of Democracy)।',
+      'ভূমধ্যসাগরীয় বাণিজ্যের অন্যতম প্রধান কেন্দ্র।'
+    ],
+    bcsQuestions: [
+      { question: 'গণতন্ত্রের সূচনা হয় কোথায়?', answer: 'প্রাচীন এথেন্সে (গ্রিস)', exam: '31st BCS' },
+      { question: 'প্রথম আধুনিক অলিম্পিক খেলা কোথায় অনুষ্ঠিত হয়?', answer: 'এথেন্স, গ্রিস', exam: 'BCS / Competitive' }
+    ],
+    cities: CITIES_DATA.filter((c) => c.countryId === 'GR')
+  },
+
+  // --- CANADA ---
+  {
+    id: 'CA',
+    nameBn: 'কানাডা',
+    nameEn: 'Canada',
+    continentBn: 'উত্তর আমেরিকা',
+    capitalBn: 'অটোয়া',
+    capitalEn: 'Ottawa',
+    currencyBn: 'কানাডিয়ান ডলার',
+    sobriquetsBn: ['ম্যাপল পাতার দেশ', 'লিলি ফুলের দেশ', 'তুষারের দেশ'],
+    parliamentBn: {
+      name: 'পার্লামেন্ট অব কানাডা',
+      type: 'দ্বি-কক্ষ',
+      upperHouse: 'সিনেট (Senate)',
+      lowerHouse: 'হাউস অব কমন্স (House of Commons)'
+    },
+    nationalEmblemBn: 'ম্যাপল পাতা (Maple Leaf)',
+    nationalSportBn: 'আইস হকি (শীতকালীন) / ল্যাক্রোস (গ্রীষ্মকালীন)',
+    airlinesBn: ['এয়ার কানাডা (Air Canada)'],
+    intelligenceBn: ['সিএসআইএস (CSIS - Canadian Security Intelligence Service)'],
+    landmarksBn: ['নয়াগ্রা জলপ্রপাত', 'সিএন টাওয়ার', 'বেনফ ন্যাশনাল পার্ক', 'লেক লুইস'],
+    historyAndWarsBn: [
+      '১৮৬৭ সালের ১ জুলাই ব্রিটিশ উত্তর আমেরিকা আইনের মাধ্যমে কানাডা কনফেডারেশন গঠিত হয়।',
+      '১৯৮২ সালে কানাডিয়ান সংবিধানের মাধ্যমে পূর্ণ সার্বভৌমত্ব অর্জন।'
+    ],
+    notablePersonalitiesBn: ['জাস্টিন ট্রুডো', 'পিয়ের ট্রুডো', 'মার্গারেট অ্যাটউড'],
+    boldHighlights: [
+      'বিশ্বের দীর্ঘতম উপকূলরেখা (Coastline) সমৃদ্ধ দেশ।',
+      'কানাডার কুইবেক (Quebec) প্রদেশ ফরাসিভাষী অঞ্চল হিসেবে পরিচিত।',
+      'আয়তনের দিক থেকে বিশ্বের দ্বিতীয় বৃহত্তম দেশ (রাশিয়ার পর)।'
+    ],
+    bcsQuestions: [
+      { question: 'কানাডার রাজধানী কোথায়?', answer: 'অটোয়া', exam: '22nd BCS' },
+      { question: 'বিশ্বের দীর্ঘতম উপকূলরেখা কোন দেশের?', answer: 'কানাডা', exam: '41st BCS' }
+    ],
+    cities: CITIES_DATA.filter((c) => c.countryId === 'CA')
+  },
+
+  // --- ARGENTINA ---
+  {
+    id: 'AR',
+    nameBn: 'আর্জেন্টিনা',
+    nameEn: 'Argentina',
+    continentBn: 'দক্ষিণ আমেরিকা',
+    capitalBn: 'বুয়েনস আইরেস',
+    capitalEn: 'Buenos Aires',
+    currencyBn: 'আর্জেন্টাইন পেসো',
+    sobriquetsBn: ['সিলভারের দেশ (Land of Silver)', 'ট্যাঙ্গো নাচের দেশ'],
+    parliamentBn: {
+      name: 'জাতীয় কংগ্রেস (National Congress)',
+      type: 'দ্বি-কক্ষ',
+      upperHouse: 'সিনেট (Senate)',
+      lowerHouse: 'চেম্বার অব ডেপুটিজ (Chamber of Deputies)'
+    },
+    nationalEmblemBn: 'মে মাসের সূর্য (Sun of May)',
+    nationalSportBn: 'প্যাটো (Pato) [জনপ্রিয়: ফুটবল]',
+    airlinesBn: ['অ্যারোলিনিয়াস আর্জেন্টিনাস (Aerolíneas Argentinas)'],
+    intelligenceBn: ['এএফআই (AFI - Agencia Federal de Inteligencia)'],
+    landmarksBn: ['ইগুয়াজু জলপ্রপাত', 'পেরিতো মোরেনো হিমবাহ', 'লা বোকা', 'কাসাদাস রোসাদা'],
+    historyAndWarsBn: [
+      '১৮১৬ সালের ৯ মে স্পেন থেকে স্বাধীনতা অর্জন করে।',
+      '১৯৮২ সালে ফকল্যান্ড দ্বীপ নিয়ে যুক্তরাজ্যের সাথে ফকল্যান্ড যুদ্ধ সংঘটিত হয়।'
+    ],
+    notablePersonalitiesBn: ['চে গেভারা', 'ডিএগো মারাদোনা', 'লিওনেল মেসি', 'পোপ ফ্রান্সিস'],
+    boldHighlights: [
+      'দক্ষিণ আমেরিকার দ্বিতীয় বৃহত্তম দেশ এবং পৃথিবীর সবচেয়ে দক্ষিণতম শহর উসুয়াইয়া (Ushuaia) এখানে অবস্থিত।',
+      'আর্জেন্টিনার বিস্তীর্ণ ঘাসভূমি অঞ্চলকে বলা হয় "পাম্পাস" (Pampas)।',
+      'বিশ্বে ট্যাঙ্গো (Tango) নৃত্যের জন্মভূমি।'
+    ],
+    bcsQuestions: [
+      { question: 'ফকল্যান্ড যুদ্ধ কোন দুটি দেশের মধ্যে হয়েছিল?', answer: 'যুক্তরাজ্য ও আর্জেন্টিনা', exam: '35th BCS' },
+      { question: 'পাম্পাস তৃণভূমি কোথায় অবস্থিত?', answer: 'আর্জেন্টিনা', exam: 'Medical / BCS' }
+    ],
+    cities: CITIES_DATA.filter((c) => c.countryId === 'AR')
+  },
+
+  // --- NEW ZEALAND ---
+  {
+    id: 'NZ',
+    nameBn: 'নিউল্যান্ড (নিউজিল্যান্ড)',
+    nameEn: 'New Zealand',
+    continentBn: 'ওশেনিয়া',
+    capitalBn: 'ওয়েলিংটন',
+    capitalEn: 'Wellington',
+    currencyBn: 'নিউজিল্যান্ড ডলার',
+    sobriquetsBn: ['কিবির দেশ', 'সাদা মেঘের দেশ (Aotearoa)', 'দক্ষিণের ব্রিটেন'],
+    parliamentBn: {
+      name: 'হাউস অব রিপ্রেজেন্টেটিভস (Parliament)',
+      type: 'এক-কক্ষ',
+      upperHouse: null,
+      lowerHouse: null
+    },
+    nationalEmblemBn: 'সিলভার ফার্ন (Silver Fern) ও কিবি পাখি',
+    nationalSportBn: 'রাগবি',
+    airlinesBn: ['এয়ার নিউজিল্যান্ড (Air New Zealand)'],
+    intelligenceBn: ['এনজেডএসআইএস (NZSIS - New Zealand Security Intelligence Service)'],
+    landmarksBn: ['মিলফোর্ড সাউন্ড', 'হবিটন মুভি সেট', 'মাউন্ট কুক', 'রোটোরুয়া'],
+    historyAndWarsBn: [
+      '১৮৪০ সালে ব্রিটিশ ও মাওরি প্রধানদের মধ্যে ঐতিহাসিক ওয়েতাঙ্গি চুক্তি (Treaty of Waitangi) স্বাক্ষরিত হয়।',
+      '১৮৯৩ সালে বিশ্বের প্রথম দেশ হিসেবে নারীদের ভোটাধিকার প্রদান করে।'
+    ],
+    notablePersonalitiesBn: ['স্যার এডমন্ড হিলারি (এভারেস্ট বিজয়ী)', 'জ্যাসিন্ডা আরডার্ন'],
+    boldHighlights: [
+      'নিউজিল্যান্ডের আদিবাসীদের বলা হয় "মাওরি" (Maori)।',
+      'দুটি প্রধান দ্বীপ নিয়ে গঠিত: উত্তর দ্বীপ ও দক্ষিণ দ্বীপ (কুক প্রণালী দ্বারা পৃথক)।',
+      'বিশ্বের সবচেয়ে দক্ষিণতম রাজধানী ওয়েলিংটন।'
+    ],
+    bcsQuestions: [
+      { question: 'বিশ্বের প্রথম কোন দেশ নারীদের ভোটাধিকার দেয়?', answer: 'নিউজিল্যান্ড', exam: '36th BCS' },
+      { question: 'নিউজিল্যান্ডের আদিবাসীদের কী বলা হয়?', answer: 'মাওরি', exam: '28th BCS' }
+    ],
+    cities: CITIES_DATA.filter((c) => c.countryId === 'NZ')
+  },
+
+  // --- MEXICO ---
+  {
+    id: 'MX',
+    nameBn: 'মেক্সিকো',
+    nameEn: 'Mexico',
+    continentBn: 'উত্তর আমেরিকা',
+    capitalBn: 'মেক্সিকো সিটি',
+    capitalEn: 'Mexico City',
+    currencyBn: 'মেক্সিকান পেসো',
+    sobriquetsBn: ['অ্যাজটেকদের দেশ', 'রুপার দেশ'],
+    parliamentBn: {
+      name: 'কংগ্রেস অব দ্য ইউনিয়ন (Congress of the Union)',
+      type: 'দ্বি-কক্ষ',
+      upperHouse: 'সিনেট (Senate)',
+      lowerHouse: 'চেম্বার অব ডেপুটিজ (Chamber of Deputies)'
+    },
+    nationalEmblemBn: 'ঈগল ও সাপ (ক্যাকটাসের ওপর বসে থাকা ঈগল)',
+    nationalSportBn: 'চাররিয়া (Charrería) [জনপ্রিয়: ফুটবল]',
+    airlinesBn: ['অ্যারোমেক্সিকো (Aeroméxico)'],
+    intelligenceBn: ['সিএনআই (CNI - Centro Nacional de Inteligencia)'],
+    landmarksBn: ['চিচেন ইৎসা (মায়া পিরামিড)', 'তেহোতিহুয়াকান', 'ফ্রাইডা কাহলো মিউজিয়াম'],
+    historyAndWarsBn: [
+      '১৮২১ সালে স্পেনের কাছ থেকে স্বাধীনতা লাভ করে।',
+      '১৯১০-১৯২০ সালের মেক্সিকান বিপ্লব দেশের রাজনৈতিক কাঠামো পরিবর্তন করে।'
+    ],
+    notablePersonalitiesBn: ['ফ্রাইডা কাহলো', 'ডিএগো রিভেরা', 'অক্তাভিও পাস (নোবেল বিজয়ী)'],
+    boldHighlights: [
+      'বিশ্বের বৃহত্তম রৌপ্য (Silver) উৎপাদক দেশ।',
+      'প্রাচীন মায়া ও অ্যাজটেক সভ্যতার কেন্দ্রস্থল ছিল মেক্সিকো।',
+      'চিচেন ইৎসা (Chichen Itza) বিশ্বের নতুন সপ্তাশ্চর্যের একটি।'
+    ],
+    bcsQuestions: [
+      { question: 'মায়া সভ্যতা মূলত কোন অঞ্চলে গড়ে উঠেছিল?', answer: 'মেক্সিকো ও মধ্য আমেরিকা', exam: '37th BCS' },
+      { question: 'বিশ্বের বৃহত্তম রৌপ্য উৎপাদক দেশ কোনটি?', answer: 'মেক্সিকো', exam: 'Competitive' }
+    ],
+    cities: CITIES_DATA.filter((c) => c.countryId === 'MX')
+  },
+
+  // --- UKRAINE ---
+  {
+    id: 'UA',
+    nameBn: 'ইউক্রেন',
+    nameEn: 'Ukraine',
+    continentBn: 'ইউরোপ',
+    capitalBn: 'কিয়েভ',
+    capitalEn: 'Kyiv',
+    currencyBn: 'রিভনিয়া (Hryvnia)',
+    sobriquetsBn: ['ইউরোপের রুটির ঝুড়ি (Breadbasket of Europe)'],
+    parliamentBn: {
+      name: 'ভারখোভনা রাদা (Verkhovna Rada)',
+      type: 'এক-কক্ষ',
+      upperHouse: null,
+      lowerHouse: null
+    },
+    nationalEmblemBn: 'ত্রিশূল (Trident / Tryzub)',
+    nationalSportBn: 'ফুটবল',
+    airlinesBn: ['ইউক্রেন ইন্টারন্যাশনাল এয়ারলাইন্স (UIA)'],
+    intelligenceBn: ['এসবিইউ (SBU - Security Service of Ukraine)'],
+    landmarksBn: ['সেন্ট সোফিয়া ক্যাথেড্রাল', 'কিয়েভ পেচেরস্ক লাভরা', 'চেরনোবিল এলাকা'],
+    historyAndWarsBn: [
+      '১৯৮৬ সালে চেরনোবিল পারমাণবিক দুর্ঘটনা।',
+      '১৯৯১ সালে সোভিয়েত ইউনিয়ন ভেঙে স্বাধীনতা লাভ।',
+      '২০১৪ সালে ক্রিমিয়া সংকট এবং ২০২২ সালে রাশিয়ার পূর্ণমাত্রার আক্রমণ।'
+    ],
+    notablePersonalitiesBn: ['ভোলোদিমির জেলেনস্কি', 'আন্দ্রি শেভচেঙ্কো', 'তারাস শেভচেঙ্কো'],
+    boldHighlights: [
+      'সম্পূর্ণ ইউরোপের সীমানার ভেতরে অবস্থিত বৃহত্তম দেশ।',
+      'কৃষ্ণসাগরের উত্তরে অবস্থিত অন্যতম প্রধান শস্য রপ্তানিকারক দেশ।',
+      '১৯৯৪ সালের বুদাপেস্ট স্মারক চুক্তির মাধ্যমে পারমাণবিক অস্ত্র সমর্পণ করে।'
+    ],
+    bcsQuestions: [
+      { question: 'চেরনোবিল পারমাণবিক কেন্দ্রটি কোথায় অবস্থিত?', answer: 'ইউক্রেন', exam: '29th BCS' },
+      { question: 'ইউক্রেনের মুদ্রার নাম কী?', answer: 'রিভনিয়া', exam: '44th BCS' }
+    ],
+    cities: CITIES_DATA.filter((c) => c.countryId === 'UA')
+  },
+
+  // --- DENMARK ---
+  {
+    id: 'DK',
+    nameBn: 'ডেনমার্ক',
+    nameEn: 'Denmark',
+    continentBn: 'ইউরোপ',
+    capitalBn: 'কোপেনহেগেন',
+    capitalEn: 'Copenhagen',
+    currencyBn: 'ড্যানিশ ক্রোন',
+    sobriquetsBn: ['বায়ুকলের দেশ', 'স্ক্যান্ডিনেভিয়ার প্রবেশদ্বার'],
+    parliamentBn: {
+      name: 'ফোকটিং (Folketing)',
+      type: 'এক-কক্ষ',
+      upperHouse: null,
+      lowerHouse: null
+    },
+    nationalEmblemBn: 'তিনটি নীল সিংহ ও লাল হৃদয়সম্বলিত রাজকীয় প্রতীক',
+    nationalSportBn: 'ফুটবল / হ্যান্ডবল',
+    airlinesBn: ['এসএএস (SAS - Scandinavian Airlines)'],
+    intelligenceBn: ['ডিইডি (PET - Danish Security and Intelligence Service)'],
+    landmarksBn: ['দ্য লিটল মারমেইড ভাস্কর্য', 'তিভোলি গার্ডেন্স', 'নাইহাভন বন্দর', 'ক্রোনবর্গ দুর্গ'],
+    historyAndWarsBn: [
+      'ভাইকিং যুগের অন্যতম কেন্দ্রস্থল।',
+      '১৮৪৯ সালে সাংবিধানিক রাজতন্ত্রে রূপান্তর।'
+    ],
+    notablePersonalitiesBn: ['হ্যান্স ক্রিশ্চিয়ান অ্যান্ডারসেন', 'নিলস বোর', 'সোরেন কির্কেগার্ড'],
+    boldHighlights: [
+      'বিশ্বের বৃহত্তম দ্বীপ "গ্রীনল্যান্ড" ডেনমার্কের একটি স্বায়ত্তশাসিত অঞ্চল।',
+      'বিশ্বের অন্যতম শীর্ষ দুর্নীতিমুক্ত ও সুখী দেশ।',
+      'বিখ্যাত খেলনা "লেগো" (Lego)-র জন্মস্থান ডেনমার্ক।'
+    ],
+    bcsQuestions: [
+      { question: 'গ্রীনল্যান্ড কোন দেশের স্বায়ত্তশাসিত অঞ্চল?', answer: 'ডেনমার্ক', exam: '36th BCS' },
+      { question: 'ডেনমার্কের আইনসভার নাম কী?', answer: 'ফোকটিং', exam: '38th BCS' }
+    ],
+    cities: CITIES_DATA.filter((c) => c.countryId === 'DK')
+  },
+
+  // --- PORTUGAL ---
+  {
+    id: 'PT',
+    nameBn: 'পর্তুগাল',
+    nameEn: 'Portugal',
+    continentBn: 'ইউরোপ',
+    capitalBn: 'লিসবন',
+    capitalEn: 'Lisbon',
+    currencyBn: 'ইউরো',
+    sobriquetsBn: ['ইউরোপের পশ্চিম দুয়ার', 'নাবিকদের দেশ'],
+    parliamentBn: {
+      name: 'অ্যাসেম্বলি অব দ্য রিপাবলিক (Assembly of the Republic)',
+      type: 'এক-কক্ষ',
+      upperHouse: null,
+      lowerHouse: null
+    },
+    nationalEmblemBn: 'আর্মিলারি স্ফিয়ার ও পর্তুগিজ ঢাল',
+    nationalSportBn: 'ফুটবল',
+    airlinesBn: ['ট্যাপ পর্তুগাল (TAP Air Portugal)'],
+    intelligenceBn: ['এসআইআরপি (SIRP - Security Intelligence System of the Portuguese Republic)'],
+    landmarksBn: ['বেলেম টাওয়ার', 'জেরোনিমোস মনাস্ট্রি', 'পেনা প্যালেস (সিনত্রা)', 'পর্তো শহর'],
+    historyAndWarsBn: [
+      '১৫ শতকে ভৌগোলিক আবিষ্কারের যুগে (Age of Discovery) শীর্ষ ভূমিকা।',
+      '১৯৭৪ সালের কার্নেশন বিপ্লবের (Carnation Revolution) মাধ্যমে স্বৈরাচারের পতন।'
+    ],
+    notablePersonalitiesBn: ['ভাস্কো দা গামা', 'ক্রিশ্চিয়ানো রোনালদো', 'ফের্দিনান্দ ম্যাগেলান', 'হোসে সারামাগো'],
+    boldHighlights: [
+      '১৪৯৮ সালে পর্তুগিজ নাবিক ভাস্কো দা গামা ইউরোপ থেকে ভারতে আসার জলপথ আবিষ্কার করেন।',
+      'বিশ্বের বৃহত্তম ছাল/কর্ক (Cork) উৎপাদনকারী দেশ।',
+      'আইবেরীয় উপদ্বীপের (Iberian Peninsula) পশ্চিমে অবস্থিত ইউরোপ মহাদেশের মূল ভূখণ্ডের সবচেয়ে পশ্চিমের দেশ।'
+    ],
+    bcsQuestions: [
+      { question: 'ইউরোপ থেকে ভারতে আসার জলপথ কে আবিষ্কার করেন?', answer: 'ভাস্কো দা গামা (পর্তুগাল)', exam: '38th BCS' },
+      { question: 'ইউরোপ মহাদেশের সর্বপশ্চিমের দেশ কোনটি?', answer: 'পর্তুগাল', exam: 'BCS / Competitive' }
+    ],
+    cities: CITIES_DATA.filter((c) => c.countryId === 'PT')
+  },
+
   // --- JAPAN ---
   {
     id: 'JP',
