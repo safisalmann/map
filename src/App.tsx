@@ -111,8 +111,8 @@ export default function App() {
         searchResults={searchResults}
       />
 
-      {/* Hero Interactive Ribbon */}
-      <div className="relative border-b border-slate-800 bg-slate-900/60 px-4 lg:px-8 py-3">
+      {/* Hero Interactive Ribbon (hidden on mobile for maximum map viewport) */}
+      <div className="hidden md:block relative border-b border-slate-800 bg-slate-900/60 px-4 lg:px-8 py-3">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
