@@ -120,7 +120,7 @@ export default function App() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-white">রেটিনা ডাইজেস্ট আন্তর্জাতিক সাধারণ জ্ঞান মানচিত্র</span>
+                <span className="text-sm font-bold text-white">আন্তর্জাতিক সাধারণ জ্ঞান মানচিত্র</span>
                 <span className="text-[11px] font-semibold text-amber-300 bg-amber-950/40 border border-amber-800/40 px-2 py-0.5 rounded-full">
                   মার্কেটর প্রজেকশন
                 </span>
@@ -194,7 +194,7 @@ export default function App() {
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-amber-400" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  রেটিনা ডাইজেস্ট গুরুত্বপূর্ণ অধ্যায়সমূহ
+                  গুরুত্বপূর্ণ অধ্যায়সমূহ
                 </h3>
               </div>
               <button
@@ -282,7 +282,7 @@ export default function App() {
       {/* Footer */}
       <footer className="border-t border-slate-900 bg-slate-950 px-4 lg:px-8 py-3 text-center text-xs text-slate-400">
         <p>
-          রেটিনা ডাইজেস্ট (আন্তর্জাতিক বিষয়াবলি) মেডিকেল ও বিসিএস ভর্তি সহায়ক ইন্টারেক্টিভ মানচিত্র · সর্বস্বত্ব সংরক্ষিত
+          (আন্তর্জাতিক বিষয়াবলি) মেডিকেল ও বিসিএস ভর্তি সহায়ক ইন্টারেক্টিভ মানচিত্র · সর্বস্বত্ব সংরক্ষিত
         </p>
       </footer>
     </div>

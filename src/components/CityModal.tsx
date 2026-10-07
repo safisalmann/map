@@ -155,7 +155,7 @@ export const CityModal: React.FC<CityModalProps> = ({
                 <div>
                   <h3 className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>রেটিনা ডাইজেস্ট বোল্ড পয়েন্টসমূহ (পরীক্ষার জন্য অতীব গুরুত্বপূর্ণ)</span>
+                    <span>(গুরুত্বপূর্ণ)</span>
                   </h3>
                   <div className="space-y-2">
                     {city.boldFacts.map((fact, idx) => (
